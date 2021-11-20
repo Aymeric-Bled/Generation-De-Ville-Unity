@@ -1,44 +1,118 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using Delaunay;
+using Delaunay.Geo;
 
 public class StartRoads : MonoBehaviour
 {
+
+    public GameObject water;
     public GameObject route;
     // Start is called before the first frame update
+    public List<LineSegment> roads;
+    public List<LineSegment> waterSegments;
+    private List<Vector2> m_points;
+    private List<LineSegment> m_edges = null;
+    private List<LineSegment> m_spanningTree;
+    private List<LineSegment> m_delaunayTriangulation;
+    private List<uint> colors;
+
+
+
     void Start()
     {
-        string[] lines = System.IO.File.ReadAllLines(@".\Python\roads1.txt");
+        readFileRoads(@".\Python\roads1.txt", @".\Python\water.txt");
+        foreach (LineSegment segment in roads)
+        {
+            DrawRoad(segment, 0.1f, route);
+        }
+        foreach (LineSegment segment in waterSegments)
+        {
+            DrawRoad(segment, 1f, water);
+        }
+        Voronoi();
+    }
+
+    void readFileRoads(string roadFile, string waterFile)
+    {
+        this.roads = new List<LineSegment>();
+        this.waterSegments = new List<LineSegment>();
+        string[] lines = System.IO.File.ReadAllLines(roadFile);
         foreach (string line in lines)
         {
             string[] points = line.Split('\t');
-			Vector2 left = new Vector2(float.Parse(points[0]), float.Parse(points[1]));
-			Vector2 right = new Vector2(float.Parse(points[2]), float.Parse(points[3]));
-			Vector3 vector = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5);
-			GameObject road = Instantiate(route, vector, Quaternion.identity);
-			road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f, 0.03f, 0.1f);
-
-			float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
-
-			/*
-			road.transform.rotation = Quaternion.AngleAxis(-Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f, Vector3.up);
-
-			if (right.y < left.y)
-				road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			else
-				road.transform.Translate(- Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			*/
+            Vector2 left = new Vector2(float.Parse(points[0]), float.Parse(points[1]));
+            Vector2 right = new Vector2(float.Parse(points[2]), float.Parse(points[3]));
+            roads.Add(new LineSegment(left, right));
+        }
+        lines = System.IO.File.ReadAllLines(waterFile);
+        foreach (string line in lines)
+        {
+            string[] points = line.Split('\t');
+            Vector2 left = new Vector2(float.Parse(points[0]), float.Parse(points[1]));
+            Vector2 right = new Vector2(float.Parse(points[2]), float.Parse(points[3]));
+            waterSegments.Add(new LineSegment(left, right));
+        }
+    }
 
 
-			road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
-			//road.transform.rotation = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5, 0, theta, 0);
+    void DrawRoad(LineSegment segment, float width, GameObject gobject)
+    {
+        Vector2 left = (Vector2)segment.p0;
+        Vector2 right = (Vector2)segment.p1;
+        Debug.Log("" + segment.p0);
+        Debug.Log("" + segment.p1);
+        Vector3 vector = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5);
+        GameObject road = Instantiate(gobject, vector, Quaternion.identity);
+        road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f, 0.03f, width);
 
-			road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			//else
-			//road.transform.localScale = new Vector3( - Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) / 10, 0.01f, 0.01f);
+        float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
 
-		}
+        road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
 
+        road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
+    }
+
+
+    Boolean isValid()
+    {
+        return true;
+    }
+
+    void chooseRandomPoints(int length)
+    {
+        m_points = new List<Vector2>();
+        colors = new List<uint>();
+        System.Random ran = new System.Random();
+        for (int i = 0; i < length;)
+        {
+            Vector2 point = new Vector2(((float)ran.NextDouble()) * 400.0f, ((float) ran.NextDouble()) * 400.0f);
+            if (!m_points.Contains(point))
+            {
+
+                colors.Add((uint)1);
+                m_points.Add(point);
+                i++;
+            }
+        }
+    }
+
+    void Voronoi()
+    {
+        chooseRandomPoints(200);
+        Debug.Log("" + m_points.Count);
+        Delaunay.Voronoi v = new Delaunay.Voronoi(m_points, colors, new Rect(0, 0, 400, 400));
+        m_edges = v.VoronoiDiagram();
+        m_spanningTree = v.SpanningTree(KruskalType.MINIMUM);
+        m_delaunayTriangulation = v.DelaunayTriangulation();
+        Debug.Log("" + m_edges.Count);
+        for (int i = 0; i < m_edges.Count; i++)
+        {
+            LineSegment seg = m_edges[i];
+            DrawRoad(seg, 0.05f, route);
+        }
     }
 
     // Update is called once per frame
