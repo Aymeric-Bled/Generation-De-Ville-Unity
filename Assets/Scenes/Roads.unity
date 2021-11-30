@@ -325,8 +325,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6077433a9ea09e140abfcb91fc7e8e78, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  water: {fileID: 0}
+  water: {fileID: 1179694194664033616, guid: 2dcfaae675c4dbd4a8dd1568ad0a48fc, type: 3}
   route: {fileID: 6388551440135560154, guid: f73f5cf875e807a48be4fc35873b6713, type: 3}
+  batiment: {fileID: 7454281726115797510, guid: 60464e33151559048a73f32dd802888f, type: 3}
 --- !u!1 &2030160462
 GameObject:
   m_ObjectHideFlags: 0
