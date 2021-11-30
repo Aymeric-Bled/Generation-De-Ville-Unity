@@ -29,7 +29,7 @@ if __name__ == "__main__":
     begin = True
     x = 0
     y = 0
-    file = open('roads1.txt', 'w')
+    file = open('water1.txt', 'w')
     
     #function to be called when mouse is clicked
     def getBegin(event):

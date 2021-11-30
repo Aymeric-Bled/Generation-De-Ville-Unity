@@ -10,6 +10,7 @@ public class StartRoads : MonoBehaviour
 
     public GameObject water;
     public GameObject route;
+    public GameObject batiment;
     // Start is called before the first frame update
     public List<LineSegment> roads;
     public List<LineSegment> waterSegments;
@@ -23,14 +24,15 @@ public class StartRoads : MonoBehaviour
 
     void Start()
     {
-        readFileRoads(@".\Python\roads1.txt", @".\Python\water.txt");
+        readFileRoads(@".\Python\roads1.txt", @".\Python\water1.txt");
         foreach (LineSegment segment in roads)
         {
-            DrawRoad(segment, 0.1f, route);
+            DrawRoad(segment, 0.1f, route, true);
+            addBuilding(segment, 0.5f, 0.1f, true, 0.2f, 0.2f, 0.2f);
         }
         foreach (LineSegment segment in waterSegments)
         {
-            DrawRoad(segment, 1f, water);
+            DrawRoad(segment, 1f, water, true);
         }
         Voronoi();
     }
@@ -58,12 +60,12 @@ public class StartRoads : MonoBehaviour
     }
 
 
-    void DrawRoad(LineSegment segment, float width, GameObject gobject)
+    void DrawRoad(LineSegment segment, float width, GameObject gobject, bool doTranslation)
     {
         Vector2 left = (Vector2)segment.p0;
         Vector2 right = (Vector2)segment.p1;
-        Debug.Log("" + segment.p0);
-        Debug.Log("" + segment.p1);
+        //Debug.Log("" + segment.p0);
+        //Debug.Log("" + segment.p1);
         Vector3 vector = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5);
         GameObject road = Instantiate(gobject, vector, Quaternion.identity);
         road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f, 0.03f, width);
@@ -71,8 +73,8 @@ public class StartRoads : MonoBehaviour
         float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
 
         road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
-
-        road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
+        if (doTranslation)
+            road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
     }
 
 
@@ -102,17 +104,46 @@ public class StartRoads : MonoBehaviour
     void Voronoi()
     {
         chooseRandomPoints(200);
-        Debug.Log("" + m_points.Count);
+        //Debug.Log("" + m_points.Count);
         Delaunay.Voronoi v = new Delaunay.Voronoi(m_points, colors, new Rect(0, 0, 400, 400));
         m_edges = v.VoronoiDiagram();
         m_spanningTree = v.SpanningTree(KruskalType.MINIMUM);
         m_delaunayTriangulation = v.DelaunayTriangulation();
-        Debug.Log("" + m_edges.Count);
+        //Debug.Log("" + m_edges.Count);
         for (int i = 0; i < m_edges.Count; i++)
         {
             LineSegment seg = m_edges[i];
-            DrawRoad(seg, 0.05f, route);
+            DrawRoad(seg, 0.05f, route, true);
+            addBuilding(seg, 0.5f, 0.05f, true, 0.1f, 0.1f, 0.2f);
         }
+    }
+
+    void addBuilding(LineSegment segment, float ratio, float roadWidth, bool direction, float width, float depth, float height)
+    {
+        Vector2 left = (Vector2)segment.p0;
+        Vector2 right = (Vector2)segment.p1;
+        Vector3 route = new Vector3(left.x - right.x, left.y - right.y, 0);
+        Vector3 norm = Vector3.Normalize(Vector3.Cross(route, new Vector3(0, 0, 1)));
+
+        float x = left.x + ratio * (right.x - left.x) - norm.x *30*roadWidth;
+        float y = left.y + ratio * (right.y - left.y) - norm.y *30*roadWidth;
+
+
+        left.x = x;
+        left.y = y;
+        Debug.Log("" + norm.z);
+        right.x = left.x + depth * norm.x;
+        right.y = left.y + depth * norm.y;
+
+        GameObject building = Instantiate(batiment, new Vector3(-y *0.05f + 5,0.5f * height,-x * 0.05f + 5), Quaternion.identity);
+        building.transform.localScale = new Vector3(depth, height, width);
+
+        float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
+
+        building.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
+        building.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
+
+        //Vector2 position = left + ratio * (right - left) + norm * roadWidth / 2;
     }
 
     // Update is called once per frame
@@ -120,4 +151,5 @@ public class StartRoads : MonoBehaviour
     {
         
     }
+
 }
