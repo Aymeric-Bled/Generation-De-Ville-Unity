@@ -8,7 +8,7 @@ public class VoronoiDemo : MonoBehaviour
 
     public Material land;
     public Texture2D tx;
-    public const int NPOINTS = 1000;
+    public const int NPOINTS = 30;
     public const int WIDTH = 200;
     public const int HEIGHT = 200;
 
@@ -17,9 +17,7 @@ public class VoronoiDemo : MonoBehaviour
 	private List<LineSegment> m_spanningTree;
 	private List<LineSegment> m_delaunayTriangulation;
 
-	public GameObject route;
-
-	private float [,] createMap() 
+    private float [,] createMap() 
     {
         float [,] map = new float[WIDTH, HEIGHT];
         for (int i = 0; i < WIDTH; i++)
@@ -37,16 +35,10 @@ public class VoronoiDemo : MonoBehaviour
 		m_points = new List<Vector2> ();
 		List<uint> colors = new List<uint> ();
 		/* Randomly pick vertices */
-		for (int i = 0; i < NPOINTS;) {
-			// Vector2 vec = new Vector2(Random.Range(0, WIDTH-1), Random.Range(0, HEIGHT-1));
-			int width = Random.Range(0, WIDTH - 1);
-			int height = Random.Range(0, HEIGHT - 1);
-			if (Random.Range(0.0f,1.0f) < map[width,height])
-			{
-				colors.Add((uint)0);
-				m_points.Add(new Vector2(width, height));
-				i++;
-			}
+		for (int i = 0; i < NPOINTS; i++) {
+			colors.Add ((uint)0);
+			Vector2 vec = new Vector2(Random.Range(0, WIDTH-1), Random.Range(0, HEIGHT-1)); 
+			m_points.Add (vec);
 		}
 		/* Generate Graphs */
 		Delaunay.Voronoi v = new Delaunay.Voronoi (m_points, colors, new Rect (0, 0, WIDTH, HEIGHT));
@@ -56,41 +48,17 @@ public class VoronoiDemo : MonoBehaviour
 
 		Color color = Color.blue;
 		/* Shows Voronoi diagram */
-		for (int i = 0; i < m_edges.Count; i++) {
+		/*for (int i = 0; i < m_edges.Count; i++) {
 			LineSegment seg = m_edges [i];				
 			Vector2 left = (Vector2)seg.p0;
 			Vector2 right = (Vector2)seg.p1;
-			Vector3 vector = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5);
-			GameObject road = Instantiate(route, vector, Quaternion.identity);
-			road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f, 0.03f, 0.03f);
-
-			float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
-
-			/*
-			road.transform.rotation = Quaternion.AngleAxis(-Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f, Vector3.up);
-
-			if (right.y < left.y)
-				road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			else
-				road.transform.Translate(- Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			*/
-
-
-			road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
-			//road.transform.rotation = new Vector3((-left.y) * 0.05f + 5, 0, (-left.x) * 0.05f + 5, 0, theta, 0);
-
-			road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
-			//else
-			//road.transform.localScale = new Vector3( - Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) / 10, 0.01f, 0.01f);
-
-			DrawLine(pixels,left, right,color);
-		}
+			DrawLine (pixels,left, right,color);
+		}*/
 
 
 		color = Color.red;
 		/* Shows Delaunay triangulation */
-		/*
-		if (m_delaunayTriangulation != null) {
+		/*if (m_delaunayTriangulation != null) {
 			for (int i = 0; i < m_delaunayTriangulation.Count; i++) {
 					LineSegment seg = m_delaunayTriangulation [i];				
 					Vector2 left = (Vector2)seg.p0;
@@ -100,7 +68,7 @@ public class VoronoiDemo : MonoBehaviour
 		}*/
 
         /* Shows spanning tree */
-		/*
+        /*
 		color = Color.black;
 		if (m_spanningTree != null) {
 			for (int i = 0; i< m_spanningTree.Count; i++) {
