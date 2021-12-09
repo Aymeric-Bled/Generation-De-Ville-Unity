@@ -328,6 +328,7 @@ MonoBehaviour:
   water: {fileID: 1179694194664033616, guid: 2dcfaae675c4dbd4a8dd1568ad0a48fc, type: 3}
   route: {fileID: 6388551440135560154, guid: f73f5cf875e807a48be4fc35873b6713, type: 3}
   batiment: {fileID: 7454281726115797510, guid: 60464e33151559048a73f32dd802888f, type: 3}
+  intersection: {fileID: 8854780904422490944, guid: 08a578f2740e6cc4db7b92a062ab867b, type: 3}
 --- !u!1 &2030160462
 GameObject:
   m_ObjectHideFlags: 0
