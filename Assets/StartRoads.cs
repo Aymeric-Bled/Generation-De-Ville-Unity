@@ -26,9 +26,10 @@ public class StartRoads : MonoBehaviour
 
     void Start()
     {
-        readFileRoads(@".\Python\roads1.txt", @".\Python\water1.txt");
+        readFileRoads(@".\Python\roads1.txt", @".\Python\water.txt");
         Voronoi(300, 0.03f);
         splitRoads();
+        removeRoadsOnWater();
         foreach (Tuple<float, LineSegment> segment in majorRoads)
         {
             DrawRoad(segment, route, true);
@@ -62,7 +63,7 @@ public class StartRoads : MonoBehaviour
             string[] points = line.Split('\t');
             Vector2 left = new Vector2(float.Parse(points[0]), float.Parse(points[1]));
             Vector2 right = new Vector2(float.Parse(points[2]), float.Parse(points[3]));
-            waterSegments.Add(new Tuple<float, LineSegment>(1f, new LineSegment(left, right)));
+            waterSegments.Add(new Tuple<float, LineSegment>(0.5f, new LineSegment(left, right)));
         }
     }
 
@@ -88,6 +89,7 @@ public class StartRoads : MonoBehaviour
         road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
         if (doTranslation)
             road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f, 0, 0);
+        
     }
 
     void addCirclesAtIntersections(Tuple<float, LineSegment> route, GameObject gobject)
@@ -252,6 +254,53 @@ public class StartRoads : MonoBehaviour
 
         }
         majorRoads = newMajorRoads;
+    }
+
+    bool isIntersecting(Tuple<float, LineSegment> t1, Tuple<float, LineSegment> t2)
+    {
+        Vector2 begin1 = (Vector2)t1.Item2.p0;
+        Vector2 end1 = (Vector2)t1.Item2.p1;
+        Vector2 begin2 = (Vector2)t2.Item2.p0;
+        Vector2 end2 = (Vector2)t2.Item2.p1;
+
+
+
+        float a1 = (end1.y - begin1.y) / (end1.x - begin1.x);
+        float b1 = begin1.y - a1 * begin1.x;
+        float a2 = (end2.y - begin2.y) / (end2.x - begin2.x);
+        float b2 = begin2.y - a2 * begin2.x;
+        if (Math.Abs(a1 - a2) < 0.0001f)
+            return false;
+        float x = (b2 - b1) / (a1 - a2);
+        if ((begin1.x < x && x < end1.x || end1.x < x && x < begin1.x) && (begin2.x < x && x < end2.x || end2.x < x && x < begin2.x))
+        {
+            return true;
+        }
+
+        return false;
+
+    }
+
+    void removeRoadsOnWater()
+    {
+        List<Tuple<float, LineSegment>> r = new List<Tuple<float, LineSegment>>();
+
+        foreach(Tuple<float, LineSegment> road in roads)
+        {
+            bool isValid = true;
+            foreach (Tuple<float, LineSegment> w in waterSegments){
+                isValid = !isIntersecting(road, w);
+                if (!isValid)
+                {
+                    break;
+                }
+            }
+            if (isValid)
+            {
+                r.Add(road);
+            }
+        }
+        roads = r;
     }
 
     // Update is called once per frame
