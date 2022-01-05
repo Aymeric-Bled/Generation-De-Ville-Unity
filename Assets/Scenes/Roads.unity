@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -229,6 +229,9 @@ GameObject:
   - component: {fileID: 1632151319}
   - component: {fileID: 1632151318}
   - component: {fileID: 1632151322}
+  - component: {fileID: 1632151323}
+  - component: {fileID: 1632151324}
+  - component: {fileID: 1632151325}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -269,7 +272,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2e05a5da750ddf94d9afb2295b5d148d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -326,9 +329,70 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   water: {fileID: 1179694194664033616, guid: 2dcfaae675c4dbd4a8dd1568ad0a48fc, type: 3}
-  route: {fileID: 6388551440135560154, guid: f73f5cf875e807a48be4fc35873b6713, type: 3}
+  smallRoad: {fileID: 6388551440135560154, guid: f73f5cf875e807a48be4fc35873b6713, type: 3}
+  majorRoad: {fileID: 6026595877874303256, guid: 8f96fb4fc1e095b4d8690a6c350f7253, type: 3}
   batiment: {fileID: 7454281726115797510, guid: 60464e33151559048a73f32dd802888f, type: 3}
-  intersection: {fileID: 8854780904422490944, guid: 08a578f2740e6cc4db7b92a062ab867b, type: 3}
+  intersection: {fileID: 8854780904422490944, guid: c8b6070335a98f84ca46fe84050ddb56, type: 3}
+--- !u!114 &1632151323
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632151317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_BuildHeightMesh: 0
+  m_NavMeshData: {fileID: 0}
+--- !u!114 &1632151324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632151317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 387bccbfc8fea044aa9cea94ae3951db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surface: {fileID: 1632151323}
+  car: {fileID: 2850379936136451685, guid: 72d3c8a3e03b2434da72374e4cde7fdd, type: 3}
+  test: {fileID: 5434155496344877889, guid: 0f26311ec3ec56148a4c19c7a0f61c26, type: 3}
+--- !u!114 &1632151325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632151317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_OverrideArea: 1
+  m_Area: 0
+  m_IgnoreFromBuild: 0
+  m_AffectedAgents: ffffffff
 --- !u!1 &2030160462
 GameObject:
   m_ObjectHideFlags: 0
