@@ -18,16 +18,19 @@ public class Trafic : MonoBehaviour
         surface.BuildNavMesh();
 
 
-        Debug.Log("rot "+car.transform.rotation);
-        //GameObject test_ = Instantiate(test, new Vector3(-5, 0, -5), Quaternion.Euler(0, 0, 90));
-        c = (NavMeshAgent)Instantiate(car, new Vector3(-5, 0, -5), Quaternion.Euler(0,0,90));
-        c.destination = new Vector3(Random.Range(-15, 5), 0, Random.Range(-15, 5));
+        
+        //GameObject test_ = Instantiate(test, new Vector3(-5, (float)-0, -5), Quaternion.Euler(0, 0, 90));
+        c = (NavMeshAgent)Instantiate(car, new Vector3(-5, 0, -5), Quaternion.Euler(0,0,0));
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (c.velocity == new Vector3(0,0,0))
+        {   
+            c.destination = new Vector3(Random.Range(-15, 5), 0, Random.Range(-15, 5));
+        }
         
-        c.destination = new Vector3(Random.Range(-15, 5), 0, Random.Range(-15, 5));
     }
 }
