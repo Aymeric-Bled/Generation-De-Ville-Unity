@@ -17,6 +17,7 @@ public class StartRoads : MonoBehaviour
     public GameObject intersection;
     public NavMeshAgent car;
     public NavMeshSurface plane;
+    public NavMeshAgent cameraCar;
 
     public List<Tuple<float,LineSegment>> roads = new List<Tuple<float, LineSegment>>();
     public List<Tuple<float, LineSegment>> majorRoads = new List<Tuple<float, LineSegment>>();
@@ -26,6 +27,8 @@ public class StartRoads : MonoBehaviour
     private List<LineSegment> m_spanningTree;
     private List<LineSegment> m_delaunayTriangulation;
     private List<uint> colors;
+    private System.Random rand = new System.Random();
+    private List<NavMeshAgent> cars = new List<NavMeshAgent>();
 
 
 
@@ -44,8 +47,8 @@ public class StartRoads : MonoBehaviour
         foreach (Tuple<float, LineSegment> segment in roads)
         {
             DrawRoad(segment, smallRoad, true);
-            addBuilding(segment, 0.5f, true, 0.05f, 0.05f, 0.1f);
-            addBuilding(segment, 0.5f, false, 0.05f, 0.05f, 0.1f);
+            addBuilding(segment, 0.5f, true, 0.1f, 0.1f, 0.2f);
+            addBuilding(segment, 0.5f, false, 0.1f, 0.1f, 0.2f);
 
         }
         foreach (Tuple<float, LineSegment> segment in waterSegments)
@@ -55,21 +58,59 @@ public class StartRoads : MonoBehaviour
 
         plane = GetComponent<NavMeshSurface>();
         plane.BuildNavMesh();
-        foreach (Tuple<float, LineSegment> segment in majorRoads)
-        {
-            LineSegment s = segment.Item2;
-            Vector2 left = (Vector2)s.p0;
-            Vector2 right = (Vector2)s.p1;
-            NavMeshHit closestHit;
-            Vector3 sourcePosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
-            //Vector3 sourcePosition = new Vector3(1f, 0f, 1f);
-            if (NavMesh.SamplePosition(sourcePosition, out closestHit, 500, 1))
-            {
-                NavMeshAgent c = (NavMeshAgent)Instantiate(car, closestHit.position, Quaternion.Euler(0, 0, 0));
 
-                NavMeshHit closestHit2;
-                NavMesh.SamplePosition(new Vector3(0f, 0f, 0f), out closestHit2, 500, 1);
-                c.destination = closestHit2.position;
+
+        
+        cars.Add(cameraCar);
+
+        NavMeshHit closestHit;
+        int index = rand.Next(roads.Count);
+        Tuple<float, LineSegment> road = roads[index];
+        LineSegment s = road.Item2;
+        Vector2 left = (Vector2)s.p0;
+        Vector2 right = (Vector2)s.p1;
+        NavMesh.SamplePosition(cameraCar.transform.position, out closestHit, 500, 1);
+        cameraCar.transform.position = closestHit.position;
+        Vector3 destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
+        NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
+        cameraCar.destination = closestHit.position;
+
+        foreach (Tuple<float, LineSegment> segment in roads)
+        {
+            s = segment.Item2;
+            left = (Vector2)s.p0;
+            right = (Vector2)s.p1;
+            Vector3 sourcePosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
+            NavMesh.SamplePosition(sourcePosition, out closestHit, 500, 1);
+            NavMeshAgent c = (NavMeshAgent)Instantiate(car, closestHit.position, Quaternion.Euler(0, 0, 0));
+            cars.Add(c);
+            index = rand.Next(roads.Count);
+            road = roads[index];
+            s = road.Item2;
+            left = (Vector2)s.p0;
+            right = (Vector2)s.p1;
+            destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
+            NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
+            c.destination = closestHit.position;
+        }
+    }
+
+    void Update()
+    {
+        foreach(NavMeshAgent c in cars)
+        {
+
+            if (Vector3.Distance(c.destination, c.transform.position) < 10f)
+            {
+                NavMeshHit closestHit;
+                int index = rand.Next(roads.Count);
+                Tuple<float, LineSegment> road = roads[index];
+                LineSegment s = road.Item2;
+                Vector2 left = (Vector2)s.p0;
+                Vector2 right = (Vector2)s.p1;
+                Vector3 destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
+                NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
+                c.destination = closestHit.position;
             }
         }
     }
@@ -115,14 +156,6 @@ public class StartRoads : MonoBehaviour
         float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
 
         road.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
-
-        /*
-        if (gobject != water)
-        {
-            NavMeshSurface surface = road.GetComponent<NavMeshSurface>();
-            surface.BuildNavMesh();
-        }
-        */
 
         if (doTranslation)
             road.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f * 10f, 0, 0);
@@ -170,18 +203,14 @@ public class StartRoads : MonoBehaviour
     void Voronoi(int count, float width)
     {
         chooseRandomPoints(count);
-        //Debug.Log("" + m_points.Count);
         Delaunay.Voronoi v = new Delaunay.Voronoi(m_points, colors, new Rect(0, 0, 400, 400));
         m_edges = v.VoronoiDiagram();
         m_spanningTree = v.SpanningTree(KruskalType.MINIMUM);
         m_delaunayTriangulation = v.DelaunayTriangulation();
-        //Debug.Log("" + m_edges.Count);
         for (int i = 0; i < m_edges.Count; i++)
         {
             LineSegment seg = m_edges[i];
             roads.Add(new Tuple<float, LineSegment>(width, seg));
-            //DrawRoad(seg, 0.05f, route, true);
-            //addBuilding(seg, 0.5f, 0.05f, true, 0.1f, 0.1f, 0.2f);
         }
     }
 
@@ -209,7 +238,6 @@ public class StartRoads : MonoBehaviour
 
         left.x = x;
         left.y = y;
-        //Debug.Log("" + norm.z);
         right.x = left.x + depth * norm.x;
         right.y = left.y + depth * norm.y;
 
@@ -220,10 +248,6 @@ public class StartRoads : MonoBehaviour
 
         building.transform.rotation = Quaternion.AngleAxis(theta, Vector3.up);
         building.transform.Translate(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.5f * 0.05f * 10f, 0, 0);
-
-        //building.GetComponent<Image>().sprite = Resources.Load<Sprite>();
-
-        //Vector2 position = left + ratio * (right - left) + norm * roadWidth / 2;
     }
 
     void splitRoads()
@@ -275,10 +299,6 @@ public class StartRoads : MonoBehaviour
                 Vector2 bg2 = new Vector2(begin2.x, begin2.y);
                 Vector2 e2 = new Vector2(end2.x, end2.y);
                 Vector2 middle = new Vector2(x, a1 * x + b1);
-
-                //Debug.Log("BEGIN: " + bg1.x + " " + bg1.y);
-                //Debug.Log("MIDDLE: " + middle.x + " " + middle.y);
-                //Debug.Log("END: " + e1.x + " " + e1.y);
                 majorRoads.Add(new Tuple<float, LineSegment>(r1.Item1, new LineSegment(begin1, middle)));
                 majorRoads.Add(new Tuple<float, LineSegment>(r1.Item1, new LineSegment(middle, e1)));
                 roads.Add(new Tuple<float, LineSegment>(r2.Item1, new LineSegment(bg2, middle)));
@@ -340,12 +360,6 @@ public class StartRoads : MonoBehaviour
             }
         }
         roads = r;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
 }
