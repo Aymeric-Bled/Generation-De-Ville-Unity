@@ -77,6 +77,7 @@ public class StartRoads : MonoBehaviour
 
         foreach (Tuple<float, LineSegment> segment in roads)
         {
+            
             s = segment.Item2;
             left = (Vector2)s.p0;
             right = (Vector2)s.p1;
