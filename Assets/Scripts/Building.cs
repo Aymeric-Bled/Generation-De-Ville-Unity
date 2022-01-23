@@ -5,7 +5,6 @@ using Delaunay;
 using Delaunay.Geo;
 
 public class Building : MonoBehaviour {
-    /*
     public static int counthigh = 0, countlow = 0;
     public float height = 30;
     public float width = 20;
@@ -13,6 +12,7 @@ public class Building : MonoBehaviour {
     Vector2[] uv;
     int[] triangles;
     int[] trianglestop;
+    /*
     public void SetMesh(List<Vector2> lp)
     {
         Vector2 center = new Vector2(transform.position.x, transform.position.z);
@@ -61,28 +61,37 @@ public class Building : MonoBehaviour {
 
 
 
-        GameObject go = new GameObject("Bâtiment");
-        go.AddComponent<MeshFilter>();
-        go.AddComponent<MeshRenderer>();
-        Mesh mesh = go.GetComponent<MeshFilter>().mesh;
+        GameObject go = GameObject.Find("Plane");
+        //go.AddComponent<MeshFilter>();
+        //go.AddComponent<MeshRenderer>();
+        //Mesh mesh = go.GetComponent<MeshFilter>().mesh;
 
         //Mesh mesh = GetComponent<MeshFilter>().mesh;
-        drawTriangle(mesh);
+        //drawTriangle(mesh);
+        MeshRenderer objRend = go.GetComponent<MeshRenderer>();
+        Texture t = Resources.Load<Texture>("Facades/facade.jpg");
+        //Vector2 size = new Vector2(1f / 100f, 1f / 100f);
+        //objRend.material.SetTextureScale("_MainTex", size);
+        objRend.material.mainTexture = t;
     }
     //This draws a triangle
     void drawTriangle(Mesh m)
     {
         //We need two arrays one to hold the vertices and one to hold the triangles
-        Vector3[] VerteicesArray = new Vector3[3];
-        int[] trianglesArray = new int[3];
+        Vector3[] VerteicesArray = new Vector3[6];
+        int[] trianglesArray = new int[6];
         //lets add 3 vertices in the 3d space
-        VerteicesArray[0] = new Vector3(0, 1, 0);
-        VerteicesArray[1] = new Vector3(-1, 0, 0);
-        VerteicesArray[2] = new Vector3(1, 0, 0);
+        VerteicesArray[0] = new Vector3(0, 0, 0);
+        VerteicesArray[1] = new Vector3(100, 0, 0);
+        VerteicesArray[2] = new Vector3(0, 100, 0);
+        VerteicesArray[3] = new Vector3(100, 100, 0);
         //define the order in which the vertices in the VerteicesArray shoudl be used to draw the triangle
         trianglesArray[0] = 0;
         trianglesArray[1] = 1;
         trianglesArray[2] = 2;
+        trianglesArray[3] = 3;
+        trianglesArray[4] = 2;
+        trianglesArray[5] = 1;
         //add these two triangles to the mesh
         m.vertices = VerteicesArray;
         m.triangles = trianglesArray;

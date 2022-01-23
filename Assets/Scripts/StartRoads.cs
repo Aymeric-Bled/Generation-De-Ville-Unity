@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.AI;
+using UnityEditor;
 using System;
 using Delaunay;
 using Delaunay.Geo;
@@ -15,7 +16,7 @@ public class StartRoads : MonoBehaviour
     public GameObject majorRoad;
     public GameObject batiment;
     public GameObject intersection;
-    public NavMeshAgent car;
+    //public NavMeshAgent car;
     public NavMeshSurface plane;
     public NavMeshAgent cameraCar;
 
@@ -47,8 +48,8 @@ public class StartRoads : MonoBehaviour
         foreach (Tuple<float, LineSegment> segment in roads)
         {
             DrawRoad(segment, smallRoad, true);
-            addBuilding(segment, 0.5f, true, 0.1f, 0.1f, 0.2f);
-            addBuilding(segment, 0.5f, false, 0.1f, 0.1f, 0.2f);
+            addBuildings(segment, true, 0.1f, 0.1f, 0.2f, 0.2f, 0.2f, 0.4f); 
+            addBuildings(segment, false, 0.1f, 0.1f, 0.2f, 0.2f, 0.2f, 0.4f);
 
         }
         foreach (Tuple<float, LineSegment> segment in waterSegments)
@@ -74,7 +75,14 @@ public class StartRoads : MonoBehaviour
         Vector3 destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
         NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
         cameraCar.destination = closestHit.position;
-
+        List<GameObject> prefabs = new List<GameObject>();
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Bus_1.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Bus_2.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_1.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_2.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_3.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_4.prefab"));
+        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Taxi.prefab"));
         foreach (Tuple<float, LineSegment> segment in roads)
         {
             
@@ -83,8 +91,11 @@ public class StartRoads : MonoBehaviour
             right = (Vector2)s.p1;
             Vector3 sourcePosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
             NavMesh.SamplePosition(sourcePosition, out closestHit, 500, 1);
-            NavMeshAgent c = (NavMeshAgent)Instantiate(car, closestHit.position, Quaternion.Euler(0, 0, 0));
-            cars.Add(c);
+            int index2 = rand.Next(prefabs.Count);
+            GameObject car = prefabs[index2];
+            GameObject c = Instantiate(car, closestHit.position, Quaternion.Euler(0, 0, 0));
+            NavMeshAgent agent = c.GetComponent<NavMeshAgent>();
+            cars.Add(agent);
             index = rand.Next(roads.Count);
             road = roads[index];
             s = road.Item2;
@@ -92,13 +103,18 @@ public class StartRoads : MonoBehaviour
             right = (Vector2)s.p1;
             destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
             NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
-            c.destination = closestHit.position;
+            agent.destination = closestHit.position;
         }
     }
 
     void Update()
     {
-        foreach(NavMeshAgent c in cars)
+
+        Camera camera = cameraCar.GetComponent<Camera>();
+        Vector3 position = camera.transform.position;
+        position.y += 0.1f;
+        camera.transform.position = position;
+        foreach (NavMeshAgent c in cars)
         {
 
             if (Vector3.Distance(c.destination, c.transform.position) < 10f)
@@ -147,11 +163,11 @@ public class StartRoads : MonoBehaviour
 
         GameObject road = Instantiate(gobject, vector, Quaternion.identity);
         if (gobject == water) {
-            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.01f * 10f, width * 10f);
+            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.01f, width * 10f);
         }
         else
         {
-            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.03f * 10f, width * 10f);
+            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.1f, width * 10f);
         }
 
         float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
@@ -171,10 +187,10 @@ public class StartRoads : MonoBehaviour
         Vector2 right = (Vector2)segment.p1;
         Vector3 vector = new Vector3(((-left.y) * 0.05f + 5) * 10f, 0, ((-left.x) * 0.05f + 5) * 10f);
         GameObject intersection1 = Instantiate(gobject, vector, Quaternion.identity);
-        intersection1.transform.localScale = new Vector3(width * 10f, 0.015f * 10f, width * 10f);
+        intersection1.transform.localScale = new Vector3(width * 10f, 0.015f, width * 10f);
         vector = new Vector3(((-right.y) * 0.05f + 5) * 10f, 0, ((-right.x) * 0.05f + 5) * 10f);
         GameObject intersection2 = Instantiate(gobject, vector, Quaternion.identity);
-        intersection2.transform.localScale = new Vector3(width * 10f, 0.015f * 10f, width * 10f);
+        intersection2.transform.localScale = new Vector3(width * 10f, 0.015f, width * 10f);
     }
 
 
@@ -187,10 +203,9 @@ public class StartRoads : MonoBehaviour
     {
         m_points = new List<Vector2>();
         colors = new List<uint>();
-        System.Random ran = new System.Random();
         for (int i = 0; i < length;)
         {
-            Vector2 point = new Vector2(((float)ran.NextDouble()) * 400.0f, ((float) ran.NextDouble()) * 400.0f);
+            Vector2 point = new Vector2(((float)rand.NextDouble()) * 400.0f, ((float) rand.NextDouble()) * 400.0f);
             if (!m_points.Contains(point))
             {
 
@@ -212,6 +227,30 @@ public class StartRoads : MonoBehaviour
         {
             LineSegment seg = m_edges[i];
             roads.Add(new Tuple<float, LineSegment>(width, seg));
+        }
+    }
+
+
+    void addBuildings(Tuple<float, LineSegment> road, bool direction, float minWidth, float minDepth, float minHeight, float maxWidth, float maxDepth, float maxHeight)
+    {
+        LineSegment segment = road.Item2;
+        float roadWidth = road.Item1;
+        Vector2 left = (Vector2)segment.p0;
+        Vector2 right = (Vector2)segment.p1;
+        float length = Vector2.Distance(left, right) * 0.05f * 10f;
+        float intersectionSpace = (maxWidth > maxDepth) ? maxWidth : maxDepth;
+        intersectionSpace *= 2;
+        intersectionSpace += roadWidth;
+        Debug.Log("LENGTH: " + length);
+        Debug.Log("WIDTH: " + intersectionSpace);
+        float rate = 5 * intersectionSpace / length;
+        while (rate < 1f - 10 * intersectionSpace / length)
+        {
+            float width = (float) (minWidth + rand.NextDouble() * (maxWidth - minWidth));
+            float depth = (float)(minDepth + rand.NextDouble() * (maxDepth - minDepth));
+            float height = (float)(minHeight + rand.NextDouble() * (maxHeight - minHeight));
+            rate += 10 * (width + 0.05f) / length;
+            addBuilding(road, rate, direction, width, depth, height);
         }
     }
 
