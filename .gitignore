@@ -60,3 +60,10 @@ crashlytics-build.properties
 
 #ignore data folder
 facadeGeneration/data/
+FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
+FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
+FacadeGeneration/checkpoint/ckpt-8.index
+FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
+FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
+FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
+*.data-00000-of-00001
