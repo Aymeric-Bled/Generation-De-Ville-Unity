@@ -14,7 +14,6 @@ public class StartRoads : MonoBehaviour
     public GameObject water;
     public GameObject smallRoad;
     public GameObject majorRoad;
-    public GameObject batiment;
     public GameObject intersection;
     public NavMeshSurface plane;
     public NavMeshAgent cameraCar;
@@ -257,6 +256,15 @@ public class StartRoads : MonoBehaviour
 
     void addBuilding(Tuple<float, LineSegment> road, float ratio , bool direction, float width, float depth, float height)
     {
+
+        List<GameObject> prefabs = new List<GameObject>();
+        prefabs.Add((GameObject)Resources.Load("Batiment/Batiment 1"));
+        prefabs.Add((GameObject)Resources.Load("Batiment/Batiment 2"));
+        prefabs.Add((GameObject)Resources.Load("Batiment/Batiment 3"));
+        prefabs.Add((GameObject)Resources.Load("Batiment/Batiment 4"));
+        prefabs.Add((GameObject)Resources.Load("Batiment/Batiment 5"));
+        int index = rand.Next(prefabs.Count);
+        GameObject batiment = prefabs[index];
         float roadWidth = road.Item1;
         LineSegment segment = road.Item2;
         Vector2 left = (Vector2)segment.p0;
