@@ -60,6 +60,8 @@ crashlytics-build.properties
 
 #ignore data folder
 facadeGeneration/data/
+FacadeGeneration/base/
+FacadeGeneration/test_images/
 FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
 FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
 FacadeGeneration/checkpoint/ckpt-8.index
@@ -67,3 +69,7 @@ FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
 FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
 FacadeGeneration/checkpoint/ckpt-8.data-00000-of-00001
 *.data-00000-of-00001
+FacadeGeneration/pix2pix.ipynb
+FacadeGeneration/checkpoint/ckpt-9.index
+FacadeGeneration/checkpoint/checkpoint
+FacadeGeneration/checkpoint/checkpoint
