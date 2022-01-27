@@ -16,7 +16,6 @@ public class StartRoads : MonoBehaviour
     public GameObject majorRoad;
     public GameObject batiment;
     public GameObject intersection;
-    //public NavMeshAgent car;
     public NavMeshSurface plane;
     public NavMeshAgent cameraCar;
 
@@ -70,19 +69,23 @@ public class StartRoads : MonoBehaviour
         LineSegment s = road.Item2;
         Vector2 left = (Vector2)s.p0;
         Vector2 right = (Vector2)s.p1;
-        NavMesh.SamplePosition(cameraCar.transform.position, out closestHit, 500, 1);
-        cameraCar.transform.position = closestHit.position;
-        Vector3 destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
-        NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
-        cameraCar.destination = closestHit.position;
+        Vector3 position = new Vector3(((-left.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x) * 0.5f * 0.05f + 5) * 10f);
+        cameraCar.transform.position = position;
+        index = rand.Next(roads.Count);
+        road = roads[index];
+        s = road.Item2;
+        left = (Vector2)s.p0;
+        right = (Vector2)s.p1;
+        Vector3 destPosition = new Vector3(((-left.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x) * 0.5f * 0.05f + 5) * 10f);
+        cameraCar.destination = destPosition;
         List<GameObject> prefabs = new List<GameObject>();
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Bus_1.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Bus_2.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_1.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_2.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_3.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Car_4.prefab"));
-        prefabs.Add(PrefabUtility.LoadPrefabContents("Assets/Simple Vehicle Pack/Prefabs/Taxi.prefab"));
+        prefabs.Add((GameObject) Resources.Load("Simple Vehicle Pack/Prefabs/Bus_1"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Bus_2"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Car_1"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Car_2"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Car_3"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Car_4"));
+        prefabs.Add((GameObject)Resources.Load("Simple Vehicle Pack/Prefabs/Taxi"));
         foreach (Tuple<float, LineSegment> segment in roads)
         {
             
@@ -110,24 +113,22 @@ public class StartRoads : MonoBehaviour
     void Update()
     {
 
-        Camera camera = cameraCar.GetComponent<Camera>();
-        Vector3 position = camera.transform.position;
-        position.y += 0.1f;
-        camera.transform.position = position;
+        
         foreach (NavMeshAgent c in cars)
         {
 
-            if (Vector3.Distance(c.destination, c.transform.position) < 10f)
+            if (Vector3.Distance(c.nextPosition, c.destination) < 1f || c.isStopped)
             {
-                NavMeshHit closestHit;
                 int index = rand.Next(roads.Count);
                 Tuple<float, LineSegment> road = roads[index];
                 LineSegment s = road.Item2;
                 Vector2 left = (Vector2)s.p0;
                 Vector2 right = (Vector2)s.p1;
-                Vector3 destPosition = new Vector3(((-left.y - right.y) * 0.5f * 0.05f + 5) * 10f, 0f, ((-left.x - right.x) * 0.5f * 0.05f + 5) * 10f);
-                NavMesh.SamplePosition(destPosition, out closestHit, 500, 1);
-                c.destination = closestHit.position;
+                Vector3 destPosition = new Vector3(((-left.y) * 0.5f * 0.05f + 5) * 10f, 0.1f, ((-left.x) * 0.5f * 0.05f + 5) * 10f);
+                c.SetDestination(destPosition);
+                NavMeshPath path = new NavMeshPath();
+                c.CalculatePath(destPosition, path);
+                c.SetPath(path);
             }
         }
     }
@@ -241,8 +242,8 @@ public class StartRoads : MonoBehaviour
         float intersectionSpace = (maxWidth > maxDepth) ? maxWidth : maxDepth;
         intersectionSpace *= 2;
         intersectionSpace += roadWidth;
-        Debug.Log("LENGTH: " + length);
-        Debug.Log("WIDTH: " + intersectionSpace);
+        //Debug.Log("LENGTH: " + length);
+        //Debug.Log("WIDTH: " + intersectionSpace);
         float rate = 5 * intersectionSpace / length;
         while (rate < 1f - 10 * intersectionSpace / length)
         {

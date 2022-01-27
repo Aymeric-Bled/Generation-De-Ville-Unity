@@ -235,18 +235,18 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_SensorSize: {x: 4.8, y: 3.5}
+  m_SensorSize: {x: 36, y: 24}
   m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 3.031089
+  m_FocalLength: 50
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 10
-    height: 10
-  near clip plane: 0.3
+    width: 1
+    height: 1
+  near clip plane: 1
   far clip plane: 1000
-  field of view: 34.306763
+  field of view: 15.5
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -255,7 +255,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 1
+  m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
@@ -335,6 +335,26 @@ PrefabInstance:
     - target: {fileID: 4870167790249810, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6753345722622183888, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
+      propertyPath: m_AutoRepath
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6753345722622183888, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
+      propertyPath: m_BaseOffset
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6753345722622183888, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
+      propertyPath: m_AutoBraking
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6753345722622183888, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6753345722622183888, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
+      propertyPath: m_AutoTraverseOffMeshLink
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f463242ba59e68243b7a693d4f0cfc18, type: 3}
@@ -454,7 +474,6 @@ MonoBehaviour:
   majorRoad: {fileID: 6026595877874303256, guid: 8f96fb4fc1e095b4d8690a6c350f7253, type: 3}
   batiment: {fileID: 7454281726115797510, guid: 60464e33151559048a73f32dd802888f, type: 3}
   intersection: {fileID: 8854780904422490944, guid: c8b6070335a98f84ca46fe84050ddb56, type: 3}
-  car: {fileID: -8936589698880200299, guid: ab26596a331d7ee43a3e9d29e2be9f84, type: 3}
   plane: {fileID: 1632151324}
   cameraCar: {fileID: 628720485}
 --- !u!114 &1632151323
@@ -501,7 +520,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.016666668
   m_BuildHeightMesh: 0
-  m_NavMeshData: {fileID: 0}
+  m_NavMeshData: {fileID: 23800000, guid: bf437d3682080f342a3cb4083a090ef8, type: 2}
 --- !u!1 &2030160462
 GameObject:
   m_ObjectHideFlags: 0
@@ -562,7 +581,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
+  m_TargetDisplay: 1
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
