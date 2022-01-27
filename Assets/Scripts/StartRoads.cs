@@ -123,7 +123,7 @@ public class StartRoads : MonoBehaviour
                 LineSegment s = road.Item2;
                 Vector2 left = (Vector2)s.p0;
                 Vector2 right = (Vector2)s.p1;
-                Vector3 destPosition = new Vector3(((-left.y) * 0.5f * 0.05f + 5) * 10f, 0.1f, ((-left.x) * 0.5f * 0.05f + 5) * 10f);
+                Vector3 destPosition = new Vector3(((-left.y) * 0.5f * 0.05f + 5) * 10f, 0.05f, ((-left.x) * 0.5f * 0.05f + 5) * 10f);
                 c.SetDestination(destPosition);
                 NavMeshPath path = new NavMeshPath();
                 c.CalculatePath(destPosition, path);
@@ -167,7 +167,7 @@ public class StartRoads : MonoBehaviour
         }
         else
         {
-            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.1f, width * 10f);
+            road.transform.localScale = new Vector3(Mathf.Sqrt(Mathf.Pow(right.x - left.x, 2) + Mathf.Pow(right.y - left.y, 2)) * 0.05f * 10f, 0.05f, width * 10f);
         }
 
         float theta = (left.y <= right.y) ? 180f - Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f : -Mathf.Atan(((float)right.x - (float)left.x) / ((float)right.y - (float)left.y)) / Mathf.PI * 180f;
@@ -187,10 +187,10 @@ public class StartRoads : MonoBehaviour
         Vector2 right = (Vector2)segment.p1;
         Vector3 vector = new Vector3(((-left.y) * 0.05f + 5) * 10f, 0, ((-left.x) * 0.05f + 5) * 10f);
         GameObject intersection1 = Instantiate(gobject, vector, Quaternion.identity);
-        intersection1.transform.localScale = new Vector3(width * 10f, 0.015f, width * 10f);
+        intersection1.transform.localScale = new Vector3(width * 10f, 0.025f, width * 10f);
         vector = new Vector3(((-right.y) * 0.05f + 5) * 10f, 0, ((-right.x) * 0.05f + 5) * 10f);
         GameObject intersection2 = Instantiate(gobject, vector, Quaternion.identity);
-        intersection2.transform.localScale = new Vector3(width * 10f, 0.015f, width * 10f);
+        intersection2.transform.localScale = new Vector3(width * 10f, 0.025f, width * 10f);
     }
 
 
