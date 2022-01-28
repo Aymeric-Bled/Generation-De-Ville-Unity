@@ -30,7 +30,7 @@ Nous avons utilisé le réseau de neurone [pix2pix](https://www.tensorflow.org/t
 
 ### Vue de dessus
 
-<img src="./img/vue de dessus.png" width="1000">
+<img src="./img/vue de dessus.PNG" width="1000">
 
 ### Vue des bâtiments
 
